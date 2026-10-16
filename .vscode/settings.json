@@ -7,5 +7,6 @@
   "code-runner.showExecutionMessage": false,
   "code-runner.saveFileBeforeRun": true,
   "code-runner.clearPreviousOutput": true,
-  "code-runner.preserveFocus": false
+  "code-runner.preserveFocus": false,
+  "C_Cpp.errorSquiggles": "disabled"
 }
