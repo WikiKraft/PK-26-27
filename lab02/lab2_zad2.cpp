@@ -17,7 +17,7 @@ int main(){
     float a1, b1;
     double a2, b2;
 
-    cout << fixed << setprecision(12);
+    cout << fixed << setprecision(2);
 
     if ( precyzja == 1) {
 
