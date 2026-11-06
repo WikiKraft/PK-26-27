@@ -37,11 +37,11 @@ int main() {
         else{
 
             cout<<endl;
-        cout<<"│";
+         cout<<"│";
 
-        for (int s=0; s<(a-2); s++){
+         for (int s=0; s<(a-2); s++){
             cout << " ";
-        }
+         }
 
         cout<<"│";
         }
