@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -16,31 +17,80 @@ using namespace std;
 
 // do drukowania wartosci na "polu o szerokości 6" służy funkcja setw(szerokosc) -> czyli setw(6)
 
+int** alokuj(int wiersze, int kolumny){
+
+    int** tb = new int* [wiersze];
+    for (int i = 0; i < wiersze; i++) {
+        tb[i] = new int[kolumny];
+    }
+    return tb;
+}
+
+void wypelnij(int** tb, int wiersze, int kolumny){
+
+    int licznik=1;
+    for (int i=0; i<wiersze; i++ ){
+        for(int j=0; j<kolumny; j++){
+            tb[i][j]= licznik++;
+            
+        }
+    }
+}
+
+void zwolnij(int wiersze, int** tab){
+
+    for(int i=0; i<wiersze;i++){
+        delete[] tab[i];
+    }
+    delete[] tab;
+}
+
+void wypisz(int** tab, int wiersze, int kolumny){
+
+    for(int i=0; i<wiersze; i++){ 
+        for (int j = 0; j < kolumny; j++) {
+            cout << setw(6) << tab[i][j];
+        }
+        cout << endl;
+    }
+
+}
+
+void trans(int**A, int** B, int m ,int n){
+    for(int i=0; i<m; i++){ 
+        for (int j = 0; j < n; j++) {
+           B[j][i]=A[i][j];
+        }
+        
+    }
+
+}
 
 int main()
 {
-    // wczytanie wymiarów M N
+    int m, n;
+    // wczytanie wymiarów M N   
+    cout<<"N: ";
+    cin>>n;
+    cout<<"M: ";
+    cin>>m;
 
-    // alokacja pamięci dla tablicy M x N
-    // A: m x n
-    int** A = new int* [m];
-    for (int i = 0; i < m; i++) {
-        A[i] = new int[n];
-    }
+    int** A=alokuj(m,n);
+    int** B=alokuj(n,m);
+
+    wypelnij(A,m,n);
+    trans(A,B,m,n);
+
+    cout << "A:" << endl;
+    wypisz(A, m, n);
+
+    cout << "B:" << endl;
+    wypisz(B, n, m);
+
+    zwolnij(m,A);
+    zwolnij(n,B);
 
 
-    // alokacja pamięci dla tablicy N x M
-    // B: n x m
-    int** B = new int* [n];
-    for (int i = 0; i < n; i++) {
-        B[i] = new int[m];
-    }
-
-    // wywołaj odpowiednie funkcje
-
-    // pamiętaj o zwolnieniu pamięci (patrz plik macierze dynamiczne i statyczne.cpp - delete[])
-
-    return 0;
 }
 
 

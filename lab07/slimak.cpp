@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <iomanip>
 
 using namespace std;
 // slimak
@@ -24,6 +25,79 @@ using namespace std;
 
 int main()
 {
+    int m, n;
+    // wczytanie wymiarów M N   
+    cout<<"N: ";
+    cin>>n;
+    cout<<"M: ";
+    cin>>m;
+
+    int top=0;
+    int bottom=n-1;
+    int lewo=0;
+    int prawo=m-1;
+    int max= n*m;
+    int licznik=1;
+
+    int** tab=new int*[n];
+
+    for (int i = 0; i < n; i++) {
+        tab[i] = new int[m];
+    }
+
+
+
+
+    while(licznik<=max){//pan prawo
+
+        for(int i=lewo; i<=prawo && licznik<=max; i++){
+            tab[top][i] = licznik++;
+        }
+
+        top++;
+    
+
+    //pan dol
+
+        for(int i=top; i<=bottom && licznik<=max; i++){
+
+            tab[i][prawo] = licznik++;
+        }
+        prawo--;
+    
+
+     //pan lewo
+        for(int i=prawo; i>= lewo && licznik<=max; i--){
+
+            tab[bottom][i]=licznik++;
+        }
+        bottom--;
+    
+
+    //gora lewa strona
+        for(int i=bottom; i>= top; i--){
+
+            tab[i][lewo]=licznik++;
+        }
+
+        lewo++;
+
+    }
+
+    for (int l=0; l<n; l++){
+
+        for (int j=0; j<m; j++){
+            cout<< setw(6)<<tab[l][j];
+        }
+
+        cout<<"\n";
+    }
+
+
+    for (int i = 0; i < n; i++) {
+        delete[] tab[i];
+    }
+    delete[] tab;
 
 
     return 0;

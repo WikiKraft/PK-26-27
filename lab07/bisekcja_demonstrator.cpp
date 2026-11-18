@@ -21,7 +21,9 @@ double wartoscWielomianu(double x, double wsp[], int n) {
 
 // ta funkcja sprawdza, czy mamy w ogóle miejsce zerowe (najprościej: policz wartość wielomianu dla a i dla b
 // jeśli mamy zmianę znaku to z mnożenia wyjdzie wartość ujemna lub 0
-bool ma_miejsce_zerowe(double a, double b, double wsp[], int n) {       
+bool ma_miejsce_zerowe(double a, double b, double wsp[], int n) {   
+    
+    
 }
 
 
@@ -58,4 +60,7 @@ int main()
     return 0;
 }
 
+
+//pow(x,l)-----x do potegi l
+//fabs(x)-wartosc bezwzgledna dla liczb przecinkowycn 
 
