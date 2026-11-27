@@ -1364,3 +1364,230 @@ linia.find(wzorzec)
 ```
 
 pozwala sprawdzić, czy linia zawiera podany tekst.
+
+# Największy palindrom mieszczący się w typie
+
+## Cel zadania
+
+Dla każdego z podanych typów całkowitoliczbowych program ma wypisać:
+
+- rozmiar typu w bajtach,
+- największą liczbę, która mieści się w tym typie i jest palindromem.
+
+Badane typy to: `signed short int`, `unsigned short int`, `signed int`, `unsigned int`, `signed long int`, `unsigned long int`, `signed long long int` i `unsigned long long int`.
+
+Dla typów ze znakiem szukamy największej wartości dodatniej. Jej granicę pobieramy przez `numeric_limits<T>::max()`.
+
+## Pomysł na rozwiązanie
+
+Nie sprawdzamy po kolei każdej liczby od maksimum w dół. Dla typów 64-bitowych taka pętla mogłaby wykonywać się bardzo długo. Zamiast tego tworzymy największego możliwego palindroma na podstawie cyfr maksimum.
+
+W kodzie cyfry są przechowywane w zwykłych tablicach. Nie używamy szablonów funkcji.
+
+## Krok 1. Pobranie maksimum typu
+
+Funkcja `sprawdzTyp` otrzymuje maksimum jako `unsigned long long`. Maksimum każdego z badanych typów mieści się w tym typie, a dla typów ze znakiem przekazujemy ich największą dodatnią wartość.
+
+Przykładowo:
+
+```cpp
+numeric_limits<signed int>::max()
+```
+
+zwraca największą wartość typu `signed int`.
+
+## Krok 2. Zapisanie cyfr maksimum w tablicy
+
+W pętli pobieramy ostatnią cyfrę przez resztę z dzielenia przez 10:
+
+```cpp
+cyfry[len++] = temp % 10;
+temp /= 10;
+```
+
+Cyfry trafiają do tablicy od końca. Dla liczby `1385` początkowo tablica zawiera:
+
+```text
+5, 8, 3, 1
+```
+
+Następna pętla zamienia kolejność cyfr, aby odpowiadała zapisowi liczby:
+
+```text
+1, 3, 8, 5
+```
+
+## Krok 3. Utworzenie kandydata
+
+Kopiujemy cyfry maksimum do tablicy `kandydat`. Następnie odbijamy pierwszą połowę na drugą:
+
+```cpp
+for (int i = 0; i < len / 2; ++i) {
+    kandydat[len - 1 - i] = kandydat[i];
+}
+```
+
+Dla cyfr `1, 3, 8, 5` otrzymujemy kandydata `1331`.
+
+## Krok 4. Porównanie kandydata z maksimum
+
+Porównujemy cyfry od lewej strony. Dla liczb o tej samej liczbie cyfr pierwsza różna cyfra rozstrzyga, która liczba jest większa.
+
+Jeśli kandydat nie przekracza maksimum, jest wynikiem.
+
+## Krok 5. Zmniejszenie kandydata, jeśli jest za duży
+
+Jeżeli kandydat przekracza maksimum, zmniejszamy środkową cyfrę lub cyfry. Jeśli napotkamy zero, zamieniamy je na 9 i przenosimy zmniejszenie w lewo. Na końcu ponownie odbijamy pierwszą połowę na drugą.
+
+Przykład dla maksimum `1990`:
+
+1. Odbicie cyfr daje `1991`, czyli liczbę za dużą.
+2. Zmniejszamy środkową część.
+3. Po ponownym odbiciu otrzymujemy `1881`.
+
+### Szczególny przypadek: pierwsza cyfra zmieniła się na zero
+
+Dla maksimum `1000` odbicie daje `1001`, czyli za dużo. Zmniejszanie prowadzi do cyfr `0, 9, 9, 0`. Ponieważ liczba zaczyna się od zera, skracamy ją o jedną cyfrę i wypełniamy dziewiątkami:
+
+```text
+0990 -> 999
+```
+
+## Krok 6. Odtworzenie liczby
+
+Gdy cyfry kandydata są już gotowe, składamy z nich liczbę. W każdej iteracji przesuwamy dotychczasowy wynik o jedno miejsce dziesiętne i dodajemy kolejną cyfrę:
+
+```cpp
+wynik = wynik * 10 + kandydat[i];
+```
+
+# Krokami, na przykładzie
+
+## Jak działa metoda z tablicami
+
+1. **Pobiera maksimum typu** jako `maxVal`, a potem robi jego kopię `temp`.
+
+2. **Rozkłada maksimum na cyfry** za pomocą `% 10` i `/ 10`. Cyfry trafiają do tablicy `cyfry` od końca.
+
+3. **Odwraca kolejność cyfr w tablicy**, aby odpowiadała zapisowi liczby od lewej do prawej.
+
+4. **Kopiuje cyfry do tablicy `kandydat`** i odbija pierwszą połowę na drugą. W ten sposób powstaje palindrom.
+
+5. **Porównuje kandydata z maksimum**, cyfra po cyfrze od lewej. Jeśli kandydat jest mniejszy lub równy maksimum, może być wynikiem.
+
+6. **Jeśli kandydat jest za duży**, zmniejsza środkową cyfrę. Jeśli cyfra wynosi `0`, zamienia ją na `9` i przenosi zmniejszenie o jedno miejsce w lewo. Następnie ponownie odbija cyfry.
+
+7. **Jeśli po zmniejszeniu liczba zaczyna się od zera**, skraca ją o jedną cyfrę i wypełnia dziewiątkami. Na przykład `0990` zmienia się w `999`.
+
+8. **Składa cyfry kandydata z powrotem w liczbę**, wykonując w każdej iteracji:
+
+   ```cpp
+   wynik = wynik * 10 + kandydat[i];
+   ```
+
+9. **Funkcja `sprawdzTyp` wypisuje wynik** razem z nazwą i rozmiarem typu.
+
+## Przykład krok po kroku: maksimum 1990
+
+### 1. Rozkład liczby na cyfry
+
+Na początku:
+
+```text
+temp = 1990
+```
+
+Pętla pobiera ostatnią cyfrę przez `temp % 10`, a potem usuwa ją przez `temp /= 10`:
+
+| `temp` przed operacją | `temp % 10` — pobrana cyfra | Cyfra zapisana w tablicy |
+|---:|---:|---|
+| 1990 | 0 | `cyfry[0] = 0` |
+| 199 | 9 | `cyfry[1] = 9` |
+| 19 | 9 | `cyfry[2] = 9` |
+| 1 | 1 | `cyfry[3] = 1` |
+
+Tablica ma teraz cyfry w odwrotnej kolejności:
+
+```text
+cyfry: 0, 9, 9, 1
+```
+
+### 2. Odwrócenie kolejności cyfr
+
+Pętla zamienia miejscami pierwszą i ostatnią cyfrę:
+
+```text
+cyfry: 1, 9, 9, 0
+```
+
+To jest już zwykły zapis liczby `1990`.
+
+### 3. Utworzenie kandydata
+
+Cyfry zostają skopiowane do tablicy `kandydat`:
+
+```text
+kandydat: 1, 9, 9, 0
+```
+
+Program odbija pierwszą połowę na drugą:
+
+- pierwsza cyfra `1` zastępuje ostatnią,
+- druga cyfra `9` zastępuje przedostatnią.
+
+Wynik:
+
+```text
+kandydat: 1, 9, 9, 1
+```
+
+Czyli kandydat to `1991`.
+
+### 4. Porównanie z maksimum
+
+Porównujemy:
+
+```text
+kandydat: 1991
+maksimum: 1990
+```
+
+Kandydat jest większy, więc nie mieści się w granicy. Trzeba go zmniejszyć.
+
+### 5. Zmniejszenie i ponowne odbicie
+
+Dla czterech cyfr `idx = (len - 1) / 2`, czyli `idx = 1`. Zmniejszamy więc drugą cyfrę:
+
+```text
+kandydat: 1, 8, 9, 1
+```
+
+Potem ponownie odbijamy pierwszą połowę na drugą:
+
+```text
+kandydat: 1, 8, 8, 1
+```
+
+Otrzymujemy `1881`, który jest palindromem i nie przekracza `1990`.
+
+### 6. Złożenie cyfr z powrotem w liczbę
+
+Program składa cyfry:
+
+```text
+0 → 1 → 18 → 188 → 1881
+```
+
+Wynikiem funkcji jest **1881**.
+
+## Przypadek szczególny: maksimum 1000
+
+Dla maksimum `1000` odbicie cyfr daje `1001`, czyli kandydata większego od granicy. Po zmniejszeniu i przeniesieniu otrzymujemy cyfry `0, 9, 9, 0`, czyli zapis `0990`.
+
+Ponieważ liczba zaczyna się od zera, program skraca ją o jedną cyfrę i wypełnia pozostałe miejsca dziewiątkami:
+
+```text
+0990 → 999
+```
+
+Wynikiem jest **999**.
